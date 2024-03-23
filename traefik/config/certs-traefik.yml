@@ -1,0 +1,10 @@
+# Dynamic configuration
+tls:
+  certificates:
+    - certFile: /etc/certs/main.crt
+      keyFile: /etc/certs/main.key
+      stores:
+        - default
+    - certFile: /etc/certs/dev.crt
+      keyFile: /etc/certs/dev.key
+ 
