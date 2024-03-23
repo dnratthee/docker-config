@@ -45,7 +45,7 @@ services:
     depends_on:
       - mariadb
     labels:
-      - traefik.enable=true"
+      - traefik.enable=true
       - traefik.http.routers.deviot.entrypoints=websecure
       - traefik.http.routers.deviot.tls=true
       - traefik.http.routers.deviot.rule=Host(`deviot.${DOMAIN}`)
