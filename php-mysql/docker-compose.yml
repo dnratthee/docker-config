@@ -1,6 +1,6 @@
 services:
   mariadb:
-    container_name: deviot_db
+    container_name: db
     image: mariadb:latest
     restart: always
     ports:
@@ -14,7 +14,7 @@ services:
       - web
 
   phpmyadmin:
-    container_name: deviot_phpmyadmin
+    container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin
     restart: always
     environment:
@@ -25,7 +25,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.deviotadmin.entrypoints=websecure
       - traefik.http.routers.deviotadmin.tls=true
-      - traefik.http.routers.deviotadmin.rule=Host(`iot.db.${DOMAIN}`)
+      - traefik.http.routers.deviotadmin.rule=Host(`db.${DOMAIN}`)
       - traefik.http.routers.deviotadmin.middlewares=auth
       - traefik.http.services.deviotadmin.loadbalancer.server.port=80
     env_file:  
@@ -37,7 +37,7 @@ services:
       - web
 
   php:
-    container_name: deviot
+    container_name: app
     build: .
     restart: always
     environment:
