@@ -1,0 +1,64 @@
+services:
+  mariadb:
+    container_name: deviot_db
+    image: mariadb:latest
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+    env_file:
+      - path: ./.env
+        required: true
+    networks:
+      - web
+
+  phpmyadmin:
+    container_name: deviot_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - mariadb
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.deviotadmin.entrypoints=websecure
+      - traefik.http.routers.deviotadmin.tls=true
+      - traefik.http.routers.deviotadmin.rule=Host(`iot.db.${DOMAIN}`)
+      - traefik.http.routers.deviotadmin.middlewares=auth
+      - traefik.http.services.deviotadmin.loadbalancer.server.port=80
+    env_file:  
+      - path: ./.env
+        required: true
+    links:
+      - mariadb:db
+    networks:
+      - web
+
+  php:
+    container_name: deviot
+    build: .
+    restart: always
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+    depends_on:
+      - mariadb
+    labels:
+      - traefik.enable=true"
+      - traefik.http.routers.deviot.entrypoints=websecure
+      - traefik.http.routers.deviot.tls=true
+      - traefik.http.routers.deviot.rule=Host(`deviot.${DOMAIN}`)
+      - traefik.http.routers.deviot.middlewares=auth
+      - traefik.http.services.deviot.loadbalancer.server.port=80
+    volumes:
+      - ./php:/var/www/html/
+    links:
+      - mariadb:db
+    networks:
+      - web
+      
+networks:
+    web:
+      external: true
+  
