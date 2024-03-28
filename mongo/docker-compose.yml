@@ -1,0 +1,24 @@
+services:
+  mongo:
+    image: mongo
+    container_name: dnr_db_1
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - path: ./mongo.env
+        required: true
+    volumes:
+      - ./data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: dnr_db_1_express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: dnr_db_1
+    env_file:
+      - path: ./admin.env
+        required: true
